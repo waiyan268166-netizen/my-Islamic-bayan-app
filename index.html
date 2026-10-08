@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Audio App</title>
+    
+    <!-- Urdu / Arabic Font Loader -->
+    <link href="https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Jameel Noori Nastaleeq', 'Urdu Typesetting', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f7f4ee;
+            color: #333;
+            padding-bottom: 90px;
+        }
+
+        /* Header Area with Live Clock */
+        .header-banner {
+            position: relative;
+            width: 100%;
+            padding: 20px 15px;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .header-banner h1 {
+            font-size: 24px;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+
+        .header-banner p {
+            font-size: 15px;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .clock-box {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .clock-time {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            font-family: sans-serif;
+        }
+
+        .clock-date {
+            font-size: 11px;
+            color: #f0f0f0;
+            font-family: sans-serif;
+        }
+
+        .container {
+            padding: 15px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #4a3525;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Category Menu Layout */
+        .grid-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .grid-card {
+            background: #ede6d8;
+            border: 1px solid #dcd1be;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .grid-card:active {
+            background: #d8cebc;
+            transform: scale(0.98);
+        }
+
+        .grid-card h3 {
+            font-size: 18px;
+            color: #4a3525;
+            font-weight: bold;
+        }
+
+        /* Audio List Screen */
+        .audio-section {
+            display: none;
+        }
+
+        .back-btn {
+            background: #4a3525;
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .audio-item {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .audio-info {
+            text-align: right;
+            flex-grow: 1;
+            margin-right: 12px;
+        }
+
+        .audio-title {
+            font-size: 17px;
+            color: #2c1d11;
+        }
+
+        .audio-date {
+            font-size: 12px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+        .play-icon-btn {
+            background-color: #00897b;
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Bottom Sticky Audio Player */
+        .player-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 2px solid #4a3525;
+            padding: 10px 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        audio {
+            width: 100%;
+            height: 35px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Banner -->
+    <div class="header-banner">
+        <h1>بيت المعارف</h1>
+        <p>ဟဇရသ်မောင်ဝ်လာနာဂျအ်ဖရ်ဆွာဟိဗ်</p>
+        <div class="clock-box">
+            <div class="clock-time" id="liveTime">00:00:00 AM</div>
+            <div class="clock-date" id="liveDate">Loading date...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Main Home View -->
+        <div id="mainMenu">
+            <div class="section-title">တရားတော် အမျိုးအစားကို နှိပ်ပါ</div>
+            <div class="grid-container">
+                <div class="grid-card" onclick="openCategory('tafseer')">
+                    <h3>သဖ်စီးရ်များ</h3>
+                </div>
+                <div class="grid-card" onclick="openCategory('islahi')">
+                    <h3>အိဆ်ွလာဟီးမဂ်ျလိစ် ဗယားန်</h3>
+                </div>
+                <div class="grid-card" onclick="openCategory('jumuah')">
+                    <h3>ဂျုမုအဟ် ဗယားန်</h3>
+                </div>
+                <div class="grid-card" onclick="openCategory('bukhari')">
+                    <h3>ဗိုခါရီနောက်ဆုံးသင်ခန်းစာ</h3>
+                </div>
+                <div class="grid-card" onclick="openCategory('jalsah')">
+                    <h3>ဂျလ်စဟ် ဗယားန်</h3>
+                </div>
+                <div class="grid-card" onclick="openCategory('tabligh')">
+                    <h3>သဗ်လီးဂေဒီးန် ဖတ်ပြခြင်း</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio List Screen -->
+        <div id="audioSection" class="audio-section">
+            <button class="back-btn" onclick="goBack()">← နောက်သို့</button>
+            <div class="section-title" id="categoryTitle"></div>
+            <div id="audioList"></div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Audio Player -->
+    <div class="player-bar" id="playerBar">
+        <audio id="audioPlayer" controls autoplay></audio>
+    </div>
+
+    <script>
+        // Live Clock Script
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            
+            document.getElementById('liveTime').innerText = `${hours}:${minutes}:${seconds} ${ampm}`;
+            
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Audio Data Setup (GitHub ရှိ MP3 နာမည်များနှင့် ကိုက်ညီအောင် ပြင်ဆင်ထားသည်)
+        const categoryData = {
+            'tafseer': {
+                title: 'သဖ်စီးရ်များ',
+                audios: [
+                    { title: 'သဖ်စီးရ် တရားတော် - အပိုင်း (၁)', date: '2026-10-08', url: 'bayan 1.mp3' }
+                ]
+            },
+            'islahi': {
+                title: 'အိဆ်ွလာဟီးမဂ်ျလိစ် ဗယားန်',
+                audios: [
+                    { title: 'အိဆ်ွလာဟီးမဂ်ျလိစ် - အပိုင်း (၁)', date: '2026-10-08', url: 'bayan 1.mp3' },
+                    { title: 'အိဆ်ွလာဟီးမဂ်ျလိစ် - အပိုင်း (၂)', date: '2026-10-08', url: 'bayan 2.mp3' }
+                ]
+            },
+            'jumuah': {
+                title: 'ဂျုမုအဟ် ဗယားန်',
+                audios: [
+                    { title: 'ဂျုမုအဟ် ဗယားန် တရားတော်', date: '2026-10-08', url: 'bayan 3.mp3' }
+                ]
+            },
+            'bukhari': {
+                title: 'ဗိုခါရီနောက်ဆုံးသင်ခန်းစာ',
+                audios: [
+                    { title: 'ဗိုခါရီ နောက်ဆုံးသင်ခန်းစာ ဒရ်စ်', date: '2026-10-08', url: 'bayan 4.mp3' }
+                ]
+            },
+            'jalsah': {
+                title: 'ဂျလ်စဟ် ဗယားန်',
+                audios: [
+                    { title: 'ဂျလ်စဟ် ဗယားန် တရားတော်', date: '2026-10-08', url: 'bayan 1.mp3' }
+                ]
+            },
+            'tabligh': {
+                title: 'သဗ်လီးဂေဒီးန် ဖတ်ပြခြင်း',
+                audios: [
+                    { title: 'သဗ်လီးဂေဒီးန် ဖတ်ပြခြင်း အပိုင်း (၁)', date: '2026-10-08', url: 'bayan 2.mp3' }
+                ]
+            }
+        };
+
+        // Open Category & Show MP3 List
+        function openCategory(key) {
+            const data = categoryData[key];
+            if (!data) return;
+
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('audioSection').style.display = 'block';
+            document.getElementById('categoryTitle').innerText = data.title;
+
+            const listContainer = document.getElementById('audioList');
+            listContainer.innerHTML = '';
+
+            data.audios.forEach(item => {
+                listContainer.innerHTML += `
+                    <div class="audio-item">
+                        <button class="play-icon-btn" onclick="playAudio('${item.url}')">▶</button>
+                        <div class="audio-info">
+                            <div class="audio-title">${item.title}</div>
+                            <div class="audio-date">📅 ${item.date}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Go Back to Home View
+        function goBack() {
+            document.getElementById('audioSection').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+        }
+
+        // Play Audio Function
+        function playAudio(url) {
+            const playerBar = document.getElementById('playerBar');
+            const player = document.getElementById('audioPlayer');
+            
+            playerBar.style.display = 'block';
+            player.src = url;
+            player.play();
+        }
+    </script>
+</body>
+</html>
